@@ -62,7 +62,7 @@ struct cbFontGlyph {
     // unicode character
     unsigned int codepoint;
     // stored in texture
-    struct cbFontTexture texture; // copy
+    GLuint texture; // raw opengl
     int x0, y0, x1, y1;
     float advance, xOffset, yOffset;
 };
@@ -185,7 +185,7 @@ static struct cbFontGlyph* loadGlyph(struct cbFontImpl* font, unsigned int codep
     // push glyph to font index
     struct cbFontGlyph glyph;
     glyph.codepoint = codepoint;
-    glyph.texture = *texture;
+    glyph.texture = texture->id;
     glyph.x0 = rect.x;
     glyph.y0 = rect.y;
     glyph.x1 = glyph.x0 + gw;
@@ -334,10 +334,10 @@ void cbRenderText(cbFont id, const char *text, float x, float y, vec3 color) {
         }
 
         // batching
-        if (currentTexture != glyph->texture.id) {
+        if (currentTexture != glyph->texture) {
             flushRenderer(currentTexture);
         }
-        currentTexture = glyph->texture.id;
+        currentTexture = glyph->texture;
 
         // push to vertices buffer
         getQuad(glyph, &x, &y, &quad);
